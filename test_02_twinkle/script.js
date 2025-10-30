@@ -1,4 +1,9 @@
-// "Twinkle Twinkle Little Star" as a NoteSequence
+// Initialize the sound player with a nice instrument
+const player = new mm.SoundFontPlayer(
+  'https://storage.googleapis.com/magentadata/js/soundfonts/sgm_plus'
+);
+
+// Twinkle Twinkle melody as NoteSequence
 const twinkle = {
   notes: [
     { pitch: 60, startTime: 0.0, endTime: 0.5 },
@@ -20,16 +25,23 @@ const twinkle = {
   totalTime: 8.0,
 };
 
-// Magenta.js player
-const player = new mm.Player();
+// Create the visualizer
+const canvas = document.getElementById('canvas');
+const visualizer = new mm.Visualizer(twinkle, canvas, {});
 
-// Play button
+// When player plays notes, update the visualizer
+player.callbackObject = {
+  run: (note) => visualizer.redraw(note),
+  stop: () => {}
+};
+
+// Play and stop controls
 document.getElementById('playBtn').addEventListener('click', async () => {
   if (player.isPlaying()) player.stop();
+  visualizer.redraw(); // reset scroll
   await player.start(twinkle);
 });
 
-// Stop button
 document.getElementById('stopBtn').addEventListener('click', () => {
   player.stop();
 });
